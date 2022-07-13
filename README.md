@@ -1,4 +1,4 @@
-# ispogen an iPXE ISO Generator 
+# ipsogen an iPXE ISO Generator 
 
 This app will genererate a bootable ISO file compatible with UEFI
 
