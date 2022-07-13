@@ -8,7 +8,7 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 @app.route("/", methods=["GET", "POST"])
 def index():
     context = {}
-    return render_template("static/index.html", context=context)
+    return render_template("index.html", context=context)
 
 @app.route("/ipsogen", methods=["POST"])
 def api_iso_gen_and_download():
