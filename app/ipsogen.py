@@ -12,55 +12,59 @@ def index():
 
 @app.route("/ipsogen", methods=["POST"])
 def api_iso_gen_and_download():
+    app.config["IPSOGEN"] = get_config()
 
     # check if the post request has the file part
     if "file" not in request.files:
         jsonify( { "status": "bad", "message": "no file part !" } ), 400        
-    data = request.files["file"]
+    data = str(request.files["file"])
 
     # check if the post request has specified filename to be return
     return_filename = "ipsogen.iso"
     if "filename" in request.form:
         return_filename = request.form["filename"]
 
+    app.logger.info("Generating ISO...")
+    embed_file      = "scaps.ipxe"
+    cmd_line        = app.config["IPSOGEN"]["ipxe_cmd_line"]
+    source_dir      = app.config["IPSOGEN"]["ipxe_source"]
+    build_dir       = app.config["IPSOGEN"]["ipxe_build"]
+    output_filepath = build_dir + "ipxe_uefi.iso"
+
     try:
-        app.logger.info("Generating ISO...")
-        embed_file        = "scaps.ipxe"
-        cmd_line          = app.config["IPSOGEN"]["ipxe_cmd_line"]
-        build_directory   = app.config["IPSOGEN"]["ipxe_source"]
-
-        # Rendering fo the embed file
-        # useless ? data = data.getvalue().decode("utf-8")
-        app.logger.debug("ipxe generation: {}".format(data))
-        # Copy entire build tree since target filename is not modifiable
-        #    p = subprocess.Popen([ "/bin/cp", "-ar", source_directory, build_directory  ], cwd=source_directory)
-        #    p.wait() 
-
-        app.logger.debug("Embed script file %sipxe/src/%s " % (build_directory, embed_file))
-
+        app.logger.debug("Embed script file {0}{1}".format(source_dir, embed_file))
         # Write embed script of the ipxe tool
-        with open(build_directory + "ipxe/src/" + embed_file, "w") as f:
+        with open(source_dir + "" + embed_file, "w") as f:
             f.write(data)
         f.closed
+    except Exception as e:
+        app.logger.error("Error in the writing phase : %s" % e)
+        return jsonify( { "status": "bad", "message": "Build error (write issue!?)" } ), 500    
 
-        app.logger.info("Build ISO using this command line %s here %s" % (cmd_line, build_directory) )
+    try:
+        app.logger.debug("Build ISO using this command line %s here %s" % (cmd_line, build_dir) )
         # Build iso file
-        p = subprocess.Popen([ '/bin/bash', cmd_line ], cwd=build_directory + "")
+        p = subprocess.Popen([ '/bin/bash', cmd_line ], cwd=build_dir + "")
         p.wait()
-
-        # Read generated iso
-        iso_file_path = build_directory + "ipxe_uefi.iso"
-        with open(iso_file_path, "rb") as f:
-            data = f.read()
-
-        # Clean build directory
-        ## XXX shutil.rmtree(build_directory)
-
-        return send_file(filename=iso_file_path, attachment_filename=return_filename, as_attachment=True , mimetype="application/octet-stream")
-
     except Exception as e:
         app.logger.error("Error in the build phase : %s" % e)
         return jsonify( { "status": "bad", "message": "Build error !" } ), 500
+        
+    # app.logger.debug("Read generated ISO")
+    # Read generated iso
+    # with open(output_filepath, "rb") as f:
+    #   data = f.read()
+
+    return send_file(output_filepath, attachment_filename=return_filename, as_attachment=True , mimetype="application/octet-stream")
+
+# @app.after_request
+# def after_request_func(response):
+#     app.config["IPSOGEN"] = get_config()
+#     output_filepath = app.config["IPSOGEN"]["ipxe_build"] + "ipxe_uefi.iso"
+#     # Cleanup build 
+#     os.remove(output_filepath)
+
+#     return response
 
 def get_config():
     with open(r'/config/config.yaml') as file:

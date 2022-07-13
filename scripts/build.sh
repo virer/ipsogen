@@ -15,8 +15,8 @@ make bin/ipxe.lkrn EMBED=scaps.ipxe
 make bin-x86_64-efi/ipxe.efi EMBED=scaps.ipxe
 
 # Only 3 letters allowed with isolinux
-cp bin/ipxe.lkrn ../../img/boot/ipxe.krn
-cp bin-x86_64-efi/ipxe.efi ../../img/EFI/BOOT/ipxe_x64.efi
+cp bin/ipxe.lkrn ../img/boot/ipxe.krn
+cp bin-x86_64-efi/ipxe.efi ../img/EFI/BOOT/ipxe_x64.efi
 
 ####################################################################
 # EFI : 
@@ -31,7 +31,7 @@ cp bin-x86_64-efi/ipxe.efi ../../img/EFI/BOOT/ipxe_x64.efi
 # ISO :
 ####################################################################
 
-cd ../../img
+cd ../img
 
 rm -f ../ipxe_uefi.iso
 

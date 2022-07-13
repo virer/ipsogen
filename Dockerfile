@@ -23,7 +23,7 @@ RUN apk --no-cache add  \
         perl    \
         xz-dev  \
         mtools  \
-        cdrkit  \
+        xorriso  \
         syslinux    \
         musl-dev    \
         coreutils   \
@@ -46,20 +46,28 @@ RUN sed -Ei "s/^\/\/(#define[ \t]*(NSLOOKUP|VLAN|REBOOT|POWEROFF|IMAGE_TRUST|PCI
 
 WORKDIR /ipxe.git
 
-# Prebuild
+# Prebuild (mandatory to avoid timeout when building ISO)
 RUN make -j 4 -C src/ \
     && make -C src/ bin-x86_64-efi/ipxe.efi \
-    && make -C src/ bin/ipxe.iso
+    && make -C src/ bin/ipxe.iso \
+    && chown -R nobody: /ipxe.git
+# chown mandatory to build ISO image file inside the container when running
 
-COPY . /
+# First stage build
 COPY --from=efi-builder /EFI/efi.img /ipxe.git/efi.img
 
+# Python app needs
+COPY ./requirements.txt /
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r /requirements.txt
 
-RUN rm -rf /EFI
-RUN chown -R nobody: /ipxe.git
-USER nobody
+COPY . /
 
-ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0 --log-config /app/logger.ini"
-ENTRYPOINT [ "gunicorn","ispogen:app"]
+# Cleanup
+RUN mv /EFI/img /ipxe.git/ && chown -R nobody: /ipxe.git/img && rm -rf /EFI /requirements.txt
+
+USER nobody
+WORKDIR /app
+
+ENV GUNICORN_CMD_ARGS "--bind=0.0.0.0 --log-config /app/logger.ini"
+ENTRYPOINT [ "gunicorn","ipsogen:app"]
