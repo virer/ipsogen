@@ -1,0 +1,174 @@
+#!ipxe
+
+echo .........................:: S.CAPS NRB iPXE ::.........................
+ifopen net0
+set net0/ip {{ host.ipaddr }}
+set net0/netmask {{ host.netmask }}
+set net0/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net0/mac}
+
+echo "Configured IP Details:"
+show net0/ip
+show net0/netmask
+show net0/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_1
+
+:nic_1
+ifclose
+ifopen net1 || goto nic_2
+set net1/ip {{ host.ipaddr }}
+set net1/netmask {{ host.netmask }}
+set net1/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net1/mac}
+
+echo "Configured IP Details:"
+show net1/ip
+show net1/netmask
+show net1/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_2
+
+:nic_2
+ifclose
+ifopen net2 || goto nic_3
+set net2/ip {{ host.ipaddr }}
+set net2/netmask {{ host.netmask }}
+set net2/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net2/mac}
+
+echo "Configured IP Details:"
+show net2/ip
+show net2/netmask
+show net2/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_3
+
+:nic_3
+ifclose
+ifopen net3 || goto nic_4
+set net3/ip {{ host.ipaddr }}
+set net3/netmask {{ host.netmask }}
+set net3/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net3/mac}
+
+echo "Configured IP Details:"
+show net3/ip
+show net3/netmask
+show net3/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_4
+
+:nic_4
+ifclose
+ifopen net4 || goto nic_5
+set net4/ip {{ host.ipaddr }}
+set net4/netmask {{ host.netmask }}
+set net4/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net4/mac}
+
+echo "Configured IP Details:"
+show net4/ip
+show net4/netmask
+show net4/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_5
+
+:nic_5
+ifclose
+ifopen net5 || goto nic_6
+set net5/ip {{ host.ipaddr }}
+set net5/netmask {{ host.netmask }}
+set net5/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net5/mac}
+
+echo "Configured IP Details:"
+show net5/ip
+show net5/netmask
+show net5/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_6
+
+:nic_6
+ifclose
+ifopen net6 || goto nic_7
+set net6/ip {{ host.ipaddr }}
+set net6/netmask {{ host.netmask }}
+set net6/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net6/mac}
+
+echo "Configured IP Details:"
+show net6/ip
+show net6/netmask
+show net6/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto nic_7
+
+:nic_7
+ifclose
+ifopen net7 || goto debug_ipxe
+set net7/ip {{ host.ipaddr }}
+set net7/netmask {{ host.netmask }}
+set net7/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+set curnicmac ${net7/mac}
+
+echo "Configured IP Details:"
+show net7/ip
+show net7/netmask
+show net7/gateway
+show dns
+show domain_name
+route
+ifstat
+chain {{ ipxe_chain_url }} || goto debug_ipxe
+:debug_ipxe
+#for ping/nslookup to work enable ping/nslookup command in config.h while buidling ipxe
+ifclose
+ifopen net0
+set net0/ip {{ host.ipaddr }}
+set net0/netmask {{ host.netmask }}
+set net0/gateway {{ host.gateway }}
+set dns {{ host.nameserver1 }}
+set domain_name nrb.be
+echo "Interface Stat: net0"
+ifstat net0
+echo "Ping to gateway ${net0/gateway} should work from here"
+shell
+
