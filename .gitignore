@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 app/__pycache__/
+bundle/EFI/
