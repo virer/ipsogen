@@ -1,6 +1,5 @@
-from multiprocessing import context
-from flask import Flask, render_template, request, jsonify, send_file
-import os, yaml, datetime, subprocess
+from flask import Flask, request, render_template, request, jsonify, send_file
+import os, yaml, subprocess, uuid
 
 app = Flask(__name__)
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
@@ -12,13 +11,15 @@ def index():
 
 @app.route("/ipsogen", methods=["POST"])
 def api_iso_gen_and_download():
-    app.logger.info("Generating ISO...")
+    myuuid = request.headers.get("HTTP_UUID")
+    app.logger.info("Generating ISO... {0}".format(myuuid))
     app.config["IPSOGEN"] = get_config()
-    embed_file      = "scaps.ipxe"
+    
+    embed_file      = myuuid + "_scaps.ipxe"
     cmd_line        = app.config["IPSOGEN"]["ipxe_cmd_line"]
     source_dir      = app.config["IPSOGEN"]["ipxe_source"]
     build_dir       = app.config["IPSOGEN"]["ipxe_build"]
-    output_filepath = build_dir + "ipxe_uefi.iso"
+    output_filepath = build_dir + myuuid + "_ipxe_uefi.iso"
 
     # check if the post request has specified filename to be return
     return_filename = "ipsogen.iso"
@@ -33,17 +34,19 @@ def api_iso_gen_and_download():
         file = request.files['file']
         file.save(source_dir + "" + embed_file)
     except Exception as e:
-        app.logger.error("Error in the writing phase : %s" % e)
+        app.logger.error("Error in the writing phase : {0}".format(e))
         return jsonify( { "status": "bad", "message": "Write issue!?" } ), 500       
 
     try:
-        app.logger.debug("Build ISO using this command line %s here %s" % (cmd_line, build_dir) )
+        app.logger.debug("Build ISO using this command line {0} here {1}".format(cmd_line, build_dir) )
         # Build iso file
-        p = subprocess.Popen([ '/bin/bash', cmd_line ], cwd=build_dir + "")
+        p = subprocess.Popen([ 'time', '/bin/bash',  cmd_line, myuuid ], cwd=build_dir + "")
         p.wait()
     except Exception as e:
-        app.logger.error("Error in the build phase : %s" % e)
+        app.logger.error("Error in the build phase : {0}".format(e))
         return jsonify( { "status": "bad", "message": "Build error !" } ), 500
+
+    os.remove(source_dir + "" + embed_file)
 
     return send_file(output_filepath, attachment_filename=return_filename, as_attachment=True , mimetype="application/octet-stream")
 

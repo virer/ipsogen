@@ -3,20 +3,25 @@
 # S.CAPS Jun2020
 #################
 
-cd /ipxe.git/src
-rm -f bin/ipxe.iso bin-x86_64-efi/ipxe.efi
+UUID=$1
 
-# The target name MUST be = to "bin/ipxe.iso"
+cp -r --preserve /ipxe.git/src /ipxe.git/${UUID}_build
+
+cd /ipxe.git/${UUID}_build
+rm -f bin/ipxe.lkrn bin-x86_64-efi/ipxe.efi
+
+# The target name MUST be = to "bin/ipxe.lkrn"
 # The embed extension must be ".ipxe"
-make bin/ipxe.lkrn EMBED=scaps.ipxe
+make bin/ipxe.lkrn EMBED=${UUID}_scaps.ipxe
 
 # The target name MUST be = to "bin-x86_64-efi/ipxe.efi"
 # The embed extension must be ".ipxe"
-make bin-x86_64-efi/ipxe.efi EMBED=scaps.ipxe
+make bin-x86_64-efi/ipxe.efi EMBED=${UUID}_scaps.ipxe
 
 # Only 3 letters allowed with isolinux
-cp bin/ipxe.lkrn ../img/boot/ipxe.krn
-cp bin-x86_64-efi/ipxe.efi ../img/EFI/BOOT/ipxe_x64.efi
+cp -r ../img ../${UUID}_img
+cp bin/ipxe.lkrn ../${UUID}_img/boot/ipxe.krn
+cp bin-x86_64-efi/ipxe.efi ../${UUID}_img/EFI/BOOT/ipxe_x64.efi
 
 ####################################################################
 # EFI : 
@@ -31,14 +36,14 @@ cp bin-x86_64-efi/ipxe.efi ../img/EFI/BOOT/ipxe_x64.efi
 # ISO :
 ####################################################################
 
-cd ../img
+cd ../${UUID}_img
 
-rm -f ../ipxe_uefi.iso
+rm -f ../${UUID}_ipxe_uefi.iso
 
 # boot.cat is generated on the fly
 xorriso -as mkisofs \
     -r -V "SCAPS_IPSOGEN" \
-    -o ../ipxe_uefi.iso \
+    -o ../${UUID}_ipxe_uefi.iso \
     -J -J -joliet-long -cache-inodes \
     -b isolinux/isolinux.bin \
     -c isolinux/boot.cat \
@@ -49,6 +54,7 @@ xorriso -as mkisofs \
     -no-emul-boot -isohybrid-gpt-basdat \
     .
 
+rm -rf ../${UUID}_img /ipxe.git/${UUID}_build &
 cd ..
 
 # EOF

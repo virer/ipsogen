@@ -69,5 +69,5 @@ RUN mv /EFI/img /ipxe.git/ && chown -R nobody: /ipxe.git/img && rm -rf /EFI /req
 USER nobody
 WORKDIR /app
 
-ENV GUNICORN_CMD_ARGS "--bind=0.0.0.0 --log-config /app/logger.ini"
+ENV GUNICORN_CMD_ARGS "--bind=0.0.0.0 --log-config /app/logger.ini -c /app/gunicorn.conf.py --workers=4 --timeout=60"
 ENTRYPOINT [ "gunicorn","ipsogen:app"]
