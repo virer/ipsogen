@@ -2,5 +2,5 @@ DEBUG: True
 bind_address: 0.0.0.0
 bind_port: 8000
 
-ipxe_cmd_line: /ipxe.git/build.sh
+ipxe_cmd_line: /scripts/build.sh
 ipxe_source: /ipxe.git/

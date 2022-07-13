@@ -33,9 +33,14 @@ RUN sed -Ei "s/^#undef([ \t]*DOWNLOAD_PROTO_(HTTPS|FTP|NFS)[ \t]*)/#define\1/" /
 # Enable additional iPXE commands: nslookup, ping, console, ipstat, profstat, ntp, cert
 RUN sed -Ei "s/^\/\/(#define[ \t]*(NSLOOKUP|VLAN|REBOOT|POWEROFF|IMAGE_TRUST|PCI|PARAM|PING|CONSOLE|IPSTAT|NTP|CERT)_CMD)/\1/" /ipxe.git/src/config/general.h
 
-COPY . /
-
 WORKDIR /ipxe.git
+
+# Prebuild
+RUN make -j 4 -C src/ \
+    && make -C src/ bin-x86_64-efi/ipxe.efi \
+    && make -C src/ bin/ipxe.iso
+
+COPY . /
 
 RUN tar -xvzf /bundle/EFI.tgz 
 # The following 2 lines as been commented to speed up process, now everything is bundled in the EFI.tgz
@@ -43,16 +48,11 @@ RUN tar -xvzf /bundle/EFI.tgz
 # USER root
 # RUN rm -f /ipxe.git/efi.img && /scripts/mk_efi_img.sh
 
-RUN chown -R nobody: /ipxe.git
-USER nobody
-RUN make -j 4 -C src/ \
-    && make -C src/ bin-x86_64-efi/ipxe.efi \
-    && make -C src/ bin/ipxe.iso
-
-
-
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r /requirements.txt
+
+RUN chown -R nobody: /ipxe.git
+USER nobody
 
 ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0 --log-config /app/logger.ini"
 ENTRYPOINT [ "gunicorn","ispogen:app"]
