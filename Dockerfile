@@ -1,3 +1,14 @@
+# First compile EFI img
+FROM debian:bullseye-slim as efi-builder
+
+# Install all necessary packages for compiling the iPXE binary files
+RUN apt-get update && apt-get install -y --fix-missing \
+        gcc binutils genisoimage liblzma-dev mtools isolinux syslinux syslinux-common libssl-dev xorriso \
+        grub2 grub-common dosfstools grub-efi-amd64-bin grub-efi-ia32-bin && rm -rf /var/lib/apt/lists/*
+
+COPY EFI/ /EFI/
+RUN chmod a+x /EFI/mk_efi_img.sh; /EFI/mk_efi_img.sh
+
 # Compile iPXE first using Alpine
 FROM python:3.10.5-alpine3.15
 ENV PYTHONUNBUFFERED 1
@@ -41,16 +52,12 @@ RUN make -j 4 -C src/ \
     && make -C src/ bin/ipxe.iso
 
 COPY . /
-
-RUN tar -xvzf /bundle/EFI.tgz 
-# The following 2 lines as been commented to speed up process, now everything is bundled in the EFI.tgz
-# Those are only there to be reproductible in case of
-# USER root
-# RUN rm -f /ipxe.git/efi.img && /scripts/mk_efi_img.sh
+COPY --from=efi-builder /EFI/efi.img /ipxe.git/efi.img
 
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r /requirements.txt
 
+RUN rm -rf /EFI
 RUN chown -R nobody: /ipxe.git
 USER nobody
 

@@ -1,18 +1,20 @@
 #!/bin/sh
-##################
-# S.CAPS Aug2022 #
-##################
+#####################
+# S.CAPS 2020 & 2022
+# EFI image builder
+#####################
+cd "$(dirname "$0")"
 
 BOOT_IMG_DATA=$(mktemp -d)
 BOOT_IMG=efi.img
 
 mkdir -p $(dirname $BOOT_IMG)
 
-truncate -s 2M $BOOT_IMG
+truncate -s 4M $BOOT_IMG
 mkfs.vfat $BOOT_IMG
 mkdir -p $BOOT_IMG_DATA/efi/boot
 
-grub2-mkimage \
+grub-mkimage \
     -C xz \
     -O x86_64-efi \
     -p /boot/grub \
