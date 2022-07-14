@@ -5,7 +5,6 @@
 import requests, hashlib, hmac
 
 def postit_multipart(url, data = {}, timeout=60, verify=False):
-    global shared_key
     try:
         x = requests.post(url, files=dict(data), timeout=timeout, verify=verify)
         status_code = x.status_code
@@ -51,4 +50,7 @@ if __name__ == "__main__":
     data = { "filename": "mypytest.iso", "file": filedata }
     status = postit_multipart(url, data)
     if status[0] == True:
-        print(status[1])
+        with open("/tmp/download.iso", 'wb') as f:
+            for chunk in status[1].iter_content(chunk_size=1024): 
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)

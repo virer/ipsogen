@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
     <header>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
         <title>IPSOGEN :: iPXE ISO Generator UEFI compatible</title>
     </header> 
     <body>
@@ -8,25 +11,25 @@
         <br>
         <br>
         <br>
+        <h1>Welcome to IPSOGEN iPXE ISO Generator</h1>
         <br>
-        <h1>Welcome to IPSOGEN</h1>
+        <hr width="45%">
+        <br>
+        <br>
+        <br>
+        <form action="/ipsogen" method="POST" enctype="multipart/form-data">
+            <h3>IPSOGEN Test Form</h3>
+            <input type="text" name="filename" value="my-test-for-ipsogen.iso"><br>
+            <input type="file" name="file"><br><br><br>
+            <input type="submit" value="Send"><br>
+        </form>
+        <br>
+        <br>
         <br>
         <br>
         <br>
         <hr width="75%">
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <h3>IPSOGEN is a iPXE ISO Generator, and it is UEFI compatible</h3>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <hr width="75%">
-        <footer><a href="https://github.com/virer/ipsogen">github.com/virer/ipsogen</a></footer>
+        <footer><h6><a href="https://github.com/virer/ipsogen">github.com/virer/ipsogen</a></h6></footer>
         </center>
     </body>
 </html>
