@@ -15,7 +15,7 @@ def index():
 
 @app.route("/ipsogen", methods=["POST"])
 def api_iso_gen_and_download():
-    myuuid = request.headers.get("HTTP_UUID")
+    myuuid = str(uuid.uuid1())
     app.logger.info("Generating ISO... {0}".format(myuuid))
     app.config["IPSOGEN"] = get_config()
     
