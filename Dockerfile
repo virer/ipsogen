@@ -33,7 +33,7 @@ ARG IPXE_TAG="1.21.1"
 
 # Clone the iPXE repo
 ADD https://github.com/ipxe/ipxe/archive/refs/tags/v${IPXE_TAG}.tar.gz .
-RUN tar xf ipxe-${IPXE_TAG}.tar.gz && mv ipxe-${IPXE_TAG} /ipxe.git && rm -f ipxe-${IPXE_TAG}.tar.gz
+RUN ls && tar xf v${IPXE_TAG}.tar.gz && mv ipxe-${IPXE_TAG} /ipxe.git && rm -f v${IPXE_TAG}.tar.gz
 
 # Enable Download via HTTPS, FTP, NFS
 RUN sed -Ei "s/^#undef([ \t]*DOWNLOAD_PROTO_(HTTPS|FTP|NFS)[ \t]*)/#define\1/" /ipxe.git/src/config/general.h
