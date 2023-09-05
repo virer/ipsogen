@@ -15,7 +15,6 @@ ENV PYTHONUNBUFFERED 1
 
 # Install all necessary packages for compiling the iPXE binary files
 RUN apk --no-cache add  \
-        git \
         bash    \
         gcc \
         binutils    \
@@ -30,10 +29,11 @@ RUN apk --no-cache add  \
         openssl
 
 # Define build argument for iPXE branch to clone/checkout
-ARG IPXE_TAG="v1.21.1"
+ARG IPXE_TAG="1.21.1"
 
 # Clone the iPXE repo
-RUN git clone "git://git.ipxe.org/ipxe.git" /ipxe.git/ && cd /ipxe.git/ && git checkout "${IPXE_TAG}" -b ipsogen
+ADD https://github.com/ipxe/ipxe/archive/refs/tags/v${IPXE_TAG}.tar.gz
+RUN tar xf ipxe-${IPXE_TAG}.tar.gz && mv ipxe-${IPXE_TAG} /ipxe.git && rm -f ipxe-${IPXE_TAG}.tar.gz
 
 # Enable Download via HTTPS, FTP, NFS
 RUN sed -Ei "s/^#undef([ \t]*DOWNLOAD_PROTO_(HTTPS|FTP|NFS)[ \t]*)/#define\1/" /ipxe.git/src/config/general.h
@@ -59,7 +59,8 @@ COPY --from=efi-builder /EFI/efi.img /ipxe.git/efi.img
 # Python app needs
 COPY ./requirements.txt /
 RUN python -m pip install --upgrade pip \
-    && pip install --no-cache-dir -r /requirements.txt
+    && pip install --no-cache-dir -r /requirements.txt \
+    && rm -f /requirements.txt
 
 COPY . /
 
