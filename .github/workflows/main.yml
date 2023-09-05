@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+#  pull_request:
+#    types:
+#      - closed
+#    branches:
+#      - main
 
 jobs:
   Build:
@@ -36,7 +36,11 @@ jobs:
                        ["master"]="production"
                        ["main"]="production")
             
-            BRANCH_NAME="$( echo ${GITHUB_BASE_REF} | cut -d '/' -f1 )"
+            # PR only : 
+            # BRANCH_NAME="$( echo ${GITHUB_BASE_REF} | cut -d '/' -f1 )"
+            
+            # Commit only :
+            BRANCH_NAME="$( echo ${GITHUB_REF} | cut -d '/' -f3 )"
             
             # Get env name from the branch name mapping
             echo "ENVIRONMENT="${BRANCH_MAP[${BRANCH_NAME}]} >> $GITHUB_OUTPUT
