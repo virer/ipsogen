@@ -52,7 +52,7 @@ def api_iso_gen_and_download():
 
     os.remove(source_dir + "" + embed_file)
 
-    return send_file(output_filepath, attachment_filename=return_filename, as_attachment=True , mimetype="application/octet-stream")
+    return send_file(output_filepath, download_name=return_filename, as_attachment=True , mimetype="application/octet-stream")
 
 def get_config():
     with open(r'/config/config.yaml') as file:
