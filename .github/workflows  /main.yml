@@ -1,14 +1,11 @@
 name: CI-PROD
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - main
-#  pull_request:
-#    types:
-#      - closed
-#    branches:
-#      - main
 
 jobs:
   Build:
