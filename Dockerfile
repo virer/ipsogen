@@ -64,7 +64,7 @@ RUN python -m pip install --upgrade pip \
 COPY . /
 
 # Cleanup
-RUN mv /EFI/img /ipxe.git/ && chown -R nobody: /ipxe.git/img && rm -rf /EFI /requirements.txt
+RUN mv /EFI/img /ipxe.git/ && chown -R nobody: /ipxe.git/img && chmod -R o+w /ipxe.git/ && rm -rf /EFI 
 
 USER nobody
 WORKDIR /app
