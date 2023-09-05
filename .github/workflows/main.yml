@@ -58,7 +58,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: docker.io/scaps/${{ github.event.repository.name }}:${{ steps.VIRER_ENV.outputs.VERSION }}
+          tags: docker.io/scaps/${{ github.event.repository.name }}:${{ steps.VIRER_ENV.outputs.VERSION }},docker.io/scaps/${{ github.event.repository.name }}:latest
           build-args: |
               ENVIRONMENT=${{ steps.VIRER_ENV.outputs.ENVIRONMENT }}
   
