@@ -32,7 +32,7 @@ RUN apk --no-cache add  \
 ARG IPXE_TAG="1.21.1"
 
 # Clone the iPXE repo
-ADD https://github.com/ipxe/ipxe/archive/refs/tags/v${IPXE_TAG}.tar.gz
+ADD https://github.com/ipxe/ipxe/archive/refs/tags/v${IPXE_TAG}.tar.gz .
 RUN tar xf ipxe-${IPXE_TAG}.tar.gz && mv ipxe-${IPXE_TAG} /ipxe.git && rm -f ipxe-${IPXE_TAG}.tar.gz
 
 # Enable Download via HTTPS, FTP, NFS
